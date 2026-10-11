@@ -1,0 +1,15 @@
+# Architecture
+
+`Panel.qml` extends Omarchy's audio widget. `Service.qml` runs `bin/runner.py` with an open stdin pipe as a lifetime token. The runner starts `discovery.py` after prerequisite and sender checks. The discovery worker also monitors its parent and owns a private runtime lock, so a forced wrapper termination or a shell reload cannot leave an orphaned connection or competing workers. When disabled, the worker restores the physical default output, stops its sender children, and unloads the virtual sinks it created.
+
+Avahi browses `_raop._tcp` and `_airplay._tcp`. Records are merged by device ID. Each receiver becomes a PipeWire/PulseAudio null sink named `omasound_airplay_<id>`. These are selectable outputs, not proof of receiver compatibility. A hidden `omasound_airplay_group` sink is the capture point for a selected group. Helpers exchange selection requests and acknowledgements in private user state.
+
+The null sinks explicitly set `monitor.channel-volumes=false`. Receiver volumes are reflected in PipeWire metadata so the master controls and icon are accurate, while monitor capture remains unattenuated. Applying sink gain to captured PCM as well as receiver gain would scale volume twice. The hidden group remains in the PipeWire object tracker even though it is excluded from the visible output list; excluding it from tracking would incorrectly show zero volume and a muted icon.
+
+`remote_volume.py` stores receiver levels under a file lock, writes atomically, and distinguishes external master-slider/mute commands from stale PipeWire values. New sinks settle for three seconds before external metadata can change saved receiver levels. The group's displayed level is the rounded arithmetic mean. Selecting Sync Volume sets all selected levels to that same mean, then links subsequent changes.
+
+`sender.py` captures 44.1 kHz stereo signed 16-bit PCM with `parec`. `group.py` captures a single PCM stream, fans out identical chunks to each sender, and uses a shared PTP clock for receivers requiring it. Once receivers report readiness, senders receive the same future `START_UNIX_MS`; acknowledged starts must agree within two milliseconds. This is a protocol scheduling check, not an acoustic measurement. Group membership changes reconnect all members. A failed sender restores local output; the user can select the speakers again to retry.
+
+`setup.py` is explicitly launched by the user. It verifies a pinned release hash before copying the sender and again before granting its timing-port capability. No downloaded shell scripts are executed. Runtime UFW changes use a known executable and validated IPv4 addresses, with a narrow source-specific rule. Receipts distinguish new rules from existing ones so cleanup only offers rules this plugin added.
+
+Paths follow XDG state, cache, and runtime locations. No personal receiver addresses, downloaded executables, credentials, or development-prototype state are shipped. The only installed system file owned by OmaSound is its dedicated sender. Dependencies remain shared system packages.

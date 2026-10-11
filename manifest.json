@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.fterenas.omasound-airplay",
+  "name": "OmaSound AirPlay",
+  "version": "0.1.0",
+  "author": "fterenas",
+  "description": "Native AirPlay 2 audio for Omarchy\u2014one speaker or multiple rooms, with independent and synchronized volume controls.",
+  "kinds": [
+    "bar-widget",
+    "service"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml",
+    "service": "Service.qml"
+  },
+  "barWidget": {
+    "displayName": "OmaSound AirPlay",
+    "description": "Audio mixer with AirPlay speaker selection",
+    "category": "Audio",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.audio"
+  }
+}
