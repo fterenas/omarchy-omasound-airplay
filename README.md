@@ -4,6 +4,10 @@ Native AirPlay 2 audio for Omarchy—one speaker or multiple rooms, with indepen
 
 OmaSound adds network speakers to Omarchy's Audio menu. Check one or more speakers and keep listening from your existing music player, browser, or other app. No playback commands are needed.
 
+![OmaSound Audio menu with Dining Room and Living Room checked, individual speaker sliders at 38%, and Sync Volume enabled](docs/images/omasound-audio.png)
+
+*Dining Room and Living Room selected, with Sync Volume enabled.*
+
 ## Features
 
 - Discovers IPv4 AirPlay audio receivers through Avahi, including audio-capable AirPlay services without a separate RAOP record.
@@ -22,7 +26,7 @@ Requires an Omarchy installation with the Quickshell plugin API (`omarchy plugin
 
 ## Install
 
-After this repository is published:
+Install the plugin:
 
 ```sh
 omarchy plugin add https://github.com/fterenas/omarchy-omasound-airplay
